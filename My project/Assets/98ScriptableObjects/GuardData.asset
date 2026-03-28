@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437fd889a8debba4ebcadd63f510f1d4, type: 3}
   m_Name: GuardData
   m_EditorClassIdentifier: Assembly-CSharp::GuardDataSO
-  _patrolMoveSpeed: 5
+  _patrolMoveSpeed: 3
   _investigateMoveSpeed: 4
-  _chaseMoveSpeed: 4
+  _chaseMoveSpeed: 3.8
   _returnMoveSpeed: 2.4
   _searchDuration: 2
   _chaseDetectRange: 2

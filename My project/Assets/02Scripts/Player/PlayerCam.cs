@@ -5,7 +5,7 @@ public class PlayerCam : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] private Transform _playerTrans;
     [SerializeField] private float _smoothSpeed = 5f;
-    [SerializeField] private Vector3 _offset = new Vector3(0, 0, -10f);
+    [SerializeField] private Vector3 _offset = new Vector3(0, 0, -15f);
 
     private void Start()
     {
