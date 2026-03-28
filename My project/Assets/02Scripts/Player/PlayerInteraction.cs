@@ -10,6 +10,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera _targetCamera;
 
     private PlayerInputReader _inputReader;
+    private PlayerHide _hide;
 
     private Crop _selectedCrop;
     private Vector3Int _selectedCellPosition;
@@ -25,6 +26,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         // 같은 오브젝트 내부 컴포넌트를 캐싱한다.
         _inputReader = GetComponent<PlayerInputReader>();
+        _hide = GetComponent<PlayerHide>();
     }
 
     private void Start()
@@ -52,6 +54,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleCropSelection()
     {
+        if (_hide != null && _hide.IsInteractionLocked)
+        {
+            return;
+        }
+
         // 클릭이 시작된 프레임에만 선택을 시도한다.
         if (!_inputReader.WasClickPressedThisFrame)
         {
@@ -76,11 +83,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             _selectedCrop = crop;
             _selectedCellPosition = clickedCellPosition;
-
-            Debug.Log(
-                $"Selected Crop - Cell: {_selectedCellPosition}, Crop Name: {_selectedCrop.GetCropName()}",
-                _selectedCrop
-            );
 
             OnCropSelected?.Invoke(_selectedCrop);
             return;

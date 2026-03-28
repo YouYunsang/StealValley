@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ac6bd29dff763c40808fbe69e59d2a9, type: 3}
-  m_Name: Wheat
-  m_EditorClassIdentifier: Assembly-CSharp::CropDataSO
-  _cropName: Wheat
-  _harvestDuration: 0.2
-  _progressAmount: 4
+  m_Script: {fileID: 11500000, guid: ca11780f77ece5140a1ac677b1337222, type: 3}
+  m_Name: PlayerHideData
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHideDatdSO
+  _hideEnterDelay: 0.1

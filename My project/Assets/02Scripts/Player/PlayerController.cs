@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerNoiseEmitter))]
+[RequireComponent(typeof(PlayerHarvest))]
+[RequireComponent(typeof(PlayerHide))]
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerMovementDataSO _movementData;
@@ -11,10 +14,12 @@ public class PlayerController : MonoBehaviour
     private PlayerMovement _movement;
     private PlayerNoiseEmitter _noiseEmitter;
     private PlayerHarvest _harvest;
+    private PlayerHide _hide;
 
     public Vector2 CurrentMoveInput { get; private set; }
     public bool IsMoving => CurrentMoveInput.sqrMagnitude > 0f;
     public bool IsStealthing { get; private set; }
+    public bool IsActionLocked => (_harvest != null && _harvest.IsHarvesting) || (_hide != null && _hide.IsMovementLocked);
 
     private void Awake()
     {
@@ -23,6 +28,7 @@ public class PlayerController : MonoBehaviour
         _movement = GetComponent<PlayerMovement>();
         _noiseEmitter = GetComponent<PlayerNoiseEmitter>();
         _harvest = GetComponent<PlayerHarvest>();
+        _hide = GetComponent<PlayerHide>();
     }
 
     private void Start()
@@ -47,6 +53,14 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMoveInput()
     {
+        if (IsActionLocked)
+        {
+            CurrentMoveInput = Vector2.zero;
+            IsStealthing = false;
+            _movement.SetMoveDirection(Vector2.zero);
+            return;
+        }
+
         // InputReader에서 받은 입력값을 정제한다.
         Vector2 rawInput = _inputReader.MoveInput;
 
@@ -67,6 +81,12 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateMoveSpeed()
     {
+        if(IsActionLocked)
+        {
+            _movement.SetMoveSpeed(_movementData.MoveSpeed);
+            return;
+        }
+
         if (IsStealthing)
         {
             _movement.SetMoveSpeed(_movementData.StealthMoveSpeed);
@@ -81,6 +101,12 @@ public class PlayerController : MonoBehaviour
         if (_harvest != null && _harvest.IsHarvesting)
         {
             _noiseEmitter.UpdateNoiseState(PlayerNoiseState.Harvest);
+            return;
+        }
+
+        if (_hide != null && _hide.IsMovementLocked)
+        {
+            _noiseEmitter.UpdateNoiseState(PlayerNoiseState.Idle);
             return;
         }
 

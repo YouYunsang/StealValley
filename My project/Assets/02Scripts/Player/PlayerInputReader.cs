@@ -7,18 +7,23 @@ public class PlayerInputReader : MonoBehaviour
     [SerializeField] private InputActionReference _stealthAction;
     [SerializeField] private InputActionReference _pointerPositionAction;
     [SerializeField] private InputActionReference _clickAction;
+    [SerializeField] private InputActionReference _interactAction;
 
     private Vector2 _moveInput;
     private bool _isStealthPressed;
     private Vector2 _pointerScreenPosition;
     private bool _isClickPressed;
     private bool _wasClickPressedThisFrame;
+    private bool _isInteractPressed;
+    private bool _wasInteractPressedThisFrame;
 
     public Vector2 MoveInput => _moveInput;
     public bool IsStealthPressed => _isStealthPressed;
     public Vector2 PointerScreenPosition => _pointerScreenPosition;
     public bool IsClickPressed => _isClickPressed;
     public bool WasClickPressedThisFrame => _wasClickPressedThisFrame;
+    public bool IsInteractPressed => _isInteractPressed;
+    public bool WasInteractPressedThisFrame => _wasInteractPressedThisFrame;
 
     private void OnEnable()
     {
@@ -42,6 +47,11 @@ public class PlayerInputReader : MonoBehaviour
         if (_clickAction != null)
         {
             _clickAction.action.Enable();
+        }
+
+        if(_interactAction != null)
+        {
+            _interactAction.action.Enable();
         }
     }
 
@@ -68,6 +78,11 @@ public class PlayerInputReader : MonoBehaviour
         {
             _clickAction.action.Disable();
         }
+
+        if( _interactAction != null)
+        {
+            _interactAction.action.Disable();
+        }
     }
 
     private void Update()
@@ -76,8 +91,10 @@ public class PlayerInputReader : MonoBehaviour
         ReadStealthInput();
         ReadPointerInput();
         ReadClickInput();
+        ReadInteractInput();
     }
 
+    #region Read Input
     private void ReadMoveInput()
     {
         // 이동 입력값을 읽는다.
@@ -131,4 +148,18 @@ public class PlayerInputReader : MonoBehaviour
             _wasClickPressedThisFrame = false;
         }
     }
+
+    private void ReadInteractInput()
+    {
+        if(_interactAction != null)
+        {
+            _isInteractPressed = _interactAction.action.IsPressed();
+            _wasInteractPressedThisFrame = _interactAction.action.WasPressedThisFrame();
+            return;
+        }
+
+        _isInteractPressed = false;
+        _wasInteractPressedThisFrame = false;
+    }
+    #endregion
 }

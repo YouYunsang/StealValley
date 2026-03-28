@@ -71,6 +71,14 @@ public class GuardSensor : MonoBehaviour
 
         if (playerCollider != null)
         {
+            PlayerHide playerHide = playerCollider.GetComponentInParent<PlayerHide>();
+
+            if (playerHide != null && playerHide.IsHidden)
+            {
+                HandlePlayerLostState();
+                return;
+            }
+
             _lastDetectedPlayerPosition = playerCollider.transform.position;
 
             if (!_isPlayerInChaseRange)
@@ -82,6 +90,11 @@ public class GuardSensor : MonoBehaviour
             return;
         }
 
+        HandlePlayerLostState();
+    }
+
+    private void HandlePlayerLostState()
+    {
         if (_isPlayerInChaseRange)
         {
             _isPlayerInChaseRange = false;
