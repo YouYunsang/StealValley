@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65df698e26c48d46bb34f6316b1f729, type: 3}
   m_Name: PlayerMovementData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementDataSO
-  _moveSpeed: 5
+  _moveSpeed: 3.4
+  _stealthMoveSpeed: 2
   _inputDeadZone: 0.15

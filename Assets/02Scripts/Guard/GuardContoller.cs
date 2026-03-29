@@ -15,8 +15,11 @@ public class GuardController : MonoBehaviour
     private Vector2 _lastHeardPosition;
     private float _searchTimer;
 
+    private Vector2 _facingDirection = Vector2.down;
+
     public GuardState CurrentState => _currentState;
     public Vector2 LastHearPosition => _lastHeardPosition;
+    public Vector2 FacingDirection => _facingDirection;
 
     private void Awake()
     {
@@ -128,6 +131,22 @@ public class GuardController : MonoBehaviour
         EnterInvestigateState(_lastHeardPosition);
     }
 
+    private void UpdateFacingDirectionTo(Vector2 targetPosition)
+    {
+        Vector2 direction = targetPosition - (Vector2)transform.position;
+        UpdateFacingDirection(direction);
+    }
+
+    private void UpdateFacingDirection(Vector2 direction)
+    {
+        if(direction.sqrMagnitude <= 0.0001f)
+        {
+            return;
+        }
+
+        _facingDirection = direction.normalized;
+    }
+
     #region 상태 도중 업데이트
     private void UpdatePatrolState()
     {
@@ -139,10 +158,14 @@ public class GuardController : MonoBehaviour
 
         _patrol.MoveToNextWaypoint();
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
+
+        UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
     }
 
     private void UpdateInvestigateState()
     {
+        UpdateFacingDirectionTo(_lastHeardPosition);
+
         // 마지막으로 들은 위치에 도착하면 수색 상태로 전환한다.
         if (!_movement.HasArrived())
         {
@@ -167,6 +190,8 @@ public class GuardController : MonoBehaviour
 
     private void UpdateReturnState()
     {
+        UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
+
         // 가장 가까운 순찰 지점으로 복귀하면 다시 순찰을 재개한다.
         if (!_movement.HasArrived())
         {
@@ -178,6 +203,10 @@ public class GuardController : MonoBehaviour
 
     private void UpdateChaseState()
     {
+        _lastHeardPosition = _sensor.LastDetectedPlayerPosition;
+
+        UpdateFacingDirectionTo(_sensor.LastDetectedPlayerPosition);
+
         // 추격 중에는 마지막으로 감지한 플레이어 위치를 계속 목표로 갱신한다.
         _movement.SetTargetPosition(_sensor.LastDetectedPlayerPosition);
     }
@@ -190,6 +219,8 @@ public class GuardController : MonoBehaviour
         _currentState = GuardState.Patrol;
         _movement.SetMoveType(GuardMoveType.Patrol);
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
+
+        UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
     }
 
     private void EnterInvestigateState(Vector2 investigatePosition)
@@ -199,6 +230,8 @@ public class GuardController : MonoBehaviour
         _lastHeardPosition = investigatePosition;
         _movement.SetMoveType(GuardMoveType.Investigate);
         _movement.SetTargetPosition(_lastHeardPosition);
+
+        UpdateFacingDirectionTo(_lastHeardPosition);
     }
 
     private void EnterSearchState()
@@ -219,6 +252,8 @@ public class GuardController : MonoBehaviour
         _currentState = GuardState.Return;
         _movement.SetMoveType(GuardMoveType.Return);
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
+
+        UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
     }
 
     private void EnterChaseState()
@@ -227,6 +262,8 @@ public class GuardController : MonoBehaviour
         _currentState = GuardState.Chase;
         _movement.SetMoveType(GuardMoveType.Chase);
         _movement.SetTargetPosition(_sensor.LastDetectedPlayerPosition);
+
+        UpdateFacingDirectionTo(_sensor.LastDetectedPlayerPosition);
     }
     #endregion
 }

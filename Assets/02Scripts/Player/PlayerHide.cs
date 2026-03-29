@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerHide : MonoBehaviour
 {
     [SerializeField] private PlayerHideDatdSO _hideData;
-    [SerializeField] private GuardDataSO _guardData;
+    [SerializeField] private float _hideCheckRadius = 10f;
     [SerializeField] private LayerMask _guardLayerMask;
     [SerializeField] private bool _showDebugLog = true;
 
@@ -41,13 +41,6 @@ public class PlayerHide : MonoBehaviour
         if (_hideData == null)
         {
             Debug.LogError($"{nameof(PlayerHide)}: PlayerHideDataSO가 할당되지 않았습니다.", this);
-            enabled = false;
-            return;
-        }
-
-        if (_guardData == null)
-        {
-            Debug.LogError($"{nameof(PlayerHide)}: GuardDataSO가 할당되지 않았습니다.", this);
             enabled = false;
             return;
         }
@@ -135,9 +128,20 @@ public class PlayerHide : MonoBehaviour
 
     private bool CanFullyHide()
     {
-        Collider2D[] guardColliders = Physics2D.OverlapCircleAll(transform.position, _guardData.ChaseDetectRange, _guardLayerMask);
+        Collider2D[] guardColliders = Physics2D.OverlapCircleAll(transform.position, _hideCheckRadius, _guardLayerMask);
 
-        return guardColliders == null || guardColliders.Length == 0;
+        for(int i = 0; i < guardColliders.Length; i++)
+        {
+            if (guardColliders[i] == null) continue;
+
+            GuardSensor guardSensor = guardColliders[i].GetComponentInParent<GuardSensor>();
+
+            if(guardSensor == null) continue;
+
+            if (guardSensor.CanSeeTarget(transform.position)) return false;
+        }
+
+        return true;
     }
 
     private void EnterHiddenState()

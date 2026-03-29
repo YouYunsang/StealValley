@@ -16,11 +16,15 @@ public class GuardDataSO : ScriptableObject
     [SerializeField] private float _searchDuration = 2.0f;
 
     [Header("Detection")]
-    [SerializeField] private float _chaseDetectRange = 0.9f;
     [SerializeField] private LayerMask _playerLayerMask;
 
     [Header("Distance")]
     [SerializeField] private float _arrivalThreshold = 0.1f;
+
+    [Header("Vision")]
+    [SerializeField] private float _viewDistance = 3.5f;
+    [SerializeField] private float _viewAngle = 70f;
+    [SerializeField] private bool _showVisionGizmo = true;
 
     [Header("Debug")]
     [SerializeField] private bool _showSensorGizmo = true;
@@ -31,9 +35,31 @@ public class GuardDataSO : ScriptableObject
     public float ReturnMoveSpeed => _returnMoveSpeed;
 
     public float SearchDuration => _searchDuration;
-    public float ChaseDetectRange => _chaseDetectRange;
     public LayerMask PlayerLayerMask => _playerLayerMask;
 
     public float ArrivalThreshold => _arrivalThreshold;
     public bool ShowSensorGizmo => _showSensorGizmo;
+    public float ViewDistance => _viewDistance;
+    public float ViewAngle => _viewAngle;
+    public bool ShowVisionGizmo => _showVisionGizmo;
+
+    private void OnValidate()
+    {
+        if(_viewDistance < 0f)
+        {
+            _viewDistance = 0f;
+        }
+
+        _viewAngle = Mathf.Clamp(_viewAngle, 0f, 360f);
+
+        if(_arrivalThreshold < 0f)
+        {
+            _arrivalThreshold = 0f;
+        }
+
+        if(_searchDuration < 0f)
+        {
+            _searchDuration = 0f;
+        }
+    }
 }

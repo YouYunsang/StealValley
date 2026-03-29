@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerNoiseData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerNoiseDataSO
   _idleNoiseRadius: 0
-  _moveNoiseRadius: 2
-  _stealthMoveNoiseRadius: 1
-  _harvestNoiseRadius: 3
+  _moveNoiseRadius: 4
+  _stealthMoveNoiseRadius: 1.5
+  _harvestNoiseRadius: 5
   _showNoiseGizmo: 1
