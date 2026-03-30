@@ -106,7 +106,7 @@ public class PlayerDropHarvest : MonoBehaviour
 
         if (moveInput.sqrMagnitude > 0.0001f)
         {
-            return moveInput.normalized;
+            return -moveInput.normalized;
         }
 
         return Vector2.right;

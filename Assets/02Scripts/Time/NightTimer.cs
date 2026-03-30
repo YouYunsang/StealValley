@@ -4,6 +4,7 @@ using UnityEngine;
 public class NightTimer : MonoBehaviour
 {
     [SerializeField] private GameManager _gameManager;
+    [SerializeField] private RunResultManager _runResultManager;
     [SerializeField] private float _nightDuration = 120f;
     [SerializeField] private bool _startTimerOnPlay = true;
     [SerializeField] private bool _showDebugLog = true;
@@ -31,6 +32,13 @@ public class NightTimer : MonoBehaviour
         if (_gameManager == null)
         {
             Debug.LogError($"{nameof(NightTimer)}: GameManager가 할당되지 않았습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        if (_runResultManager == null)
+        {
+            Debug.LogError($"{nameof(NightTimer)}: RunResultManager가 할당되지 않았습니다.", this);
             enabled = false;
             return;
         }
@@ -96,7 +104,7 @@ public class NightTimer : MonoBehaviour
 
     private void TickTimer()
     {
-        if(!_isRunning || _isExpired || _gameManager.IsGameEnded)
+        if (!_isRunning || _isExpired || _gameManager.IsGameEnded)
         {
             return;
         }
@@ -106,7 +114,7 @@ public class NightTimer : MonoBehaviour
 
         OnTimeChanged?.Invoke(_remainingTime);
 
-        if(_remainingTime > 0f)
+        if (_remainingTime > 0f)
         {
             return;
         }
@@ -130,12 +138,15 @@ public class NightTimer : MonoBehaviour
         }
 
         OnTimeExpired?.Invoke();
+
+        // 시간 초과 게임 오버 시 최종 점수는 0으로 확정한다.
+        _runResultManager.RecordFailResult();
         _gameManager.FailRun(FailReason.TimeOut);
     }
 
     private void OnValidate()
     {
-        if(_nightDuration <= 0f)
+        if (_nightDuration <= 0f)
         {
             _nightDuration = 1f;
         }

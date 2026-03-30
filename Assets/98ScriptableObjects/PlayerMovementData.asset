@@ -15,6 +15,6 @@ MonoBehaviour:
   _moveSpeed: 3
   _stealthMoveSpeed: 1.5
   _moveSpeedDecreasePerCrop: 0.03
-  _minMoveSpeed: 1.5
-  _minStealthMoveSpeed: 0.7
+  _minMoveSpeed: 2
+  _minStealthMoveSpeed: 1
   _inputDeadZone: 0.15

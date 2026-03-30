@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: GuardData
   m_EditorClassIdentifier: Assembly-CSharp::GuardDataSO
   _patrolMoveSpeed: 1.3
-  _investigateMoveSpeed: 2
-  _chaseMoveSpeed: 2.3
+  _investigateMoveSpeed: 1.6
+  _chaseMoveSpeed: 1.9
   _returnMoveSpeed: 1.5
   _alertDuration: 0.5
   _searchDuration: 3

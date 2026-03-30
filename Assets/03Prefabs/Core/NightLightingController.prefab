@@ -131,8 +131,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NightLightingController
   _globalLight: {fileID: 2303515464051545242}
   _nightTimer: {fileID: 0}
-  _startIntensity: 0.85
-  _endIntensity: 0.45
+  _startIntensity: 0.5
+  _endIntensity: 0.3
   _startColor: {r: 0.75, g: 0.8, b: 1, a: 1}
   _endColor: {r: 0.2, g: 0.24, b: 0.35, a: 1}
   _darknessCurve:
