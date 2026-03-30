@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2979260136468195853}
   - component: {fileID: 3753208536828855485}
   - component: {fileID: 1098094681451958243}
+  - component: {fileID: 3063407040548647872}
   m_Layer: 9
   m_Name: FlashlightVision
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194554894009269211}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -90,6 +91,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194554894009269211}
   m_Mesh: {fileID: 0}
+--- !u!210 &3063407040548647872
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194554894009269211}
+  m_Enabled: 1
+  m_SortingLayerID: 1523936939
+  m_SortingLayer: 6
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &1741592197162715450
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,7 +546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8682435381809421081
 Transform:
   m_ObjectHideFlags: 0
@@ -606,7 +620,6 @@ MonoBehaviour:
   _waypoints:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
   _loopPatrol: 1
   _startFromClosestWaypoint: 1
 --- !u!114 &6643896739669329016
@@ -659,7 +672,7 @@ MonoBehaviour:
   _innerRadius: 0.7
   _sortingLayerName: Default
   _sortingOrder: 2
-  _visionColor: {r: 0.9384103, g: 1, b: 0, a: 0.28627452}
+  _visionColor: {r: 0.8559058, g: 0.89433956, b: 0.28180128, a: 0.28627452}
   _showDebugLog: 1
 --- !u!114 &8232559955932696483
 MonoBehaviour:
