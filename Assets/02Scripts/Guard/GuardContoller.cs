@@ -85,6 +85,10 @@ public class GuardController : MonoBehaviour
                 UpdatePatrolState();
                 break;
 
+            case GuardState.PatrolSearch:
+                UpdatePatrolSearchState();
+                break;
+
             case GuardState.Investigate:
                 UpdateInvestigateState();
                 break;
@@ -156,16 +160,34 @@ public class GuardController : MonoBehaviour
     #region 상태 도중 업데이트
     private void UpdatePatrolState()
     {
-        // 순찰 지점에 도착하면 다음 웨이포인트로 이동한다.
+        // 순찰 지점에 도착하면 즉시 다음 지점으로 가지 않고 순찰 수색 상태로 전환한다.
         if (!_movement.HasArrived())
         {
             return;
         }
 
-        _patrol.MoveToNextWaypoint();
-        _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
+        EnterPatrolSearchState();
+    }
 
-        UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
+    private void UpdatePatrolSearchState()
+    {
+        // 웨이포인트 도착 후 제자리에서 좌우를 훑는다.
+        UpdateSweepFacingDirection(
+            _searchBaseFacingDirection,
+            _guardData.PatrolSearchSweepAngle,
+            _guardData.PatrolSearchSweepSpeed
+        );
+
+        _searchTimer -= Time.deltaTime;
+
+        if (_searchTimer > 0f)
+        {
+            return;
+        }
+
+        // 순찰 수색이 끝나면 다음 웨이포인트로 이동한다.
+        _patrol.MoveToNextWaypoint();
+        EnterPatrolState();
     }
 
     private void UpdateInvestigateState()
@@ -185,7 +207,11 @@ public class GuardController : MonoBehaviour
     private void UpdateSearchState()
     {
         // 제자리에서 좌우로 훑으며 수색한다.
-        UpdateSearchFacingDirection();
+        UpdateSweepFacingDirection(
+            _searchBaseFacingDirection,
+            _guardData.SearchSweepAngle,
+            _guardData.SearchSweepSpeed
+        );
 
         _searchTimer -= Time.deltaTime;
 
@@ -232,6 +258,17 @@ public class GuardController : MonoBehaviour
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
 
         UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
+    }
+
+    private void EnterPatrolSearchState()
+    {
+        // 웨이포인트 도착 후 순찰용 수색 상태로 진입한다.
+        _currentState = GuardState.PatrolSearch;
+        _searchTimer = _guardData.PatrolSearchDuration;
+        _searchSweepTimer = 0f;
+        _searchBaseFacingDirection = _facingDirection;
+
+        _movement.ClearTargetPosition();
     }
 
     private void EnterInvestigateState(Vector2 investigatePosition)
@@ -281,19 +318,19 @@ public class GuardController : MonoBehaviour
     }
     #endregion
 
-    #region Search 회전
-    private void UpdateSearchFacingDirection()
+    #region 회전
+    private void UpdateSweepFacingDirection(Vector2 baseFacingDirection, float sweepAngle, float sweepSpeed)
     {
-        // Search 상태에서 기준 방향을 중심으로 좌우 왕복 회전한다.
-        if (_guardData.SearchSweepAngle <= 0f || _guardData.SearchSweepSpeed <= 0f)
+        // 기준 방향을 중심으로 좌우 왕복 회전한다.
+        if (sweepAngle <= 0f || sweepSpeed <= 0f)
         {
-            _facingDirection = _searchBaseFacingDirection;
+            _facingDirection = baseFacingDirection;
             return;
         }
 
-        _searchSweepTimer += Time.deltaTime * _guardData.SearchSweepSpeed;
+        _searchSweepTimer += Time.deltaTime * sweepSpeed;
 
-        float halfAngle = _guardData.SearchSweepAngle * 0.5f;
+        float halfAngle = sweepAngle * 0.5f;
 
         // 0~1~0 형태로 왕복하는 값을 만든다.
         float pingPong = Mathf.PingPong(_searchSweepTimer, 1f);
@@ -301,7 +338,7 @@ public class GuardController : MonoBehaviour
         // -halfAngle ~ +halfAngle 범위로 변환한다.
         float currentOffsetAngle = Mathf.Lerp(-halfAngle, halfAngle, pingPong);
 
-        _facingDirection = RotateVector(_searchBaseFacingDirection, currentOffsetAngle);
+        _facingDirection = RotateVector(baseFacingDirection, currentOffsetAngle);
     }
 
     private Vector2 RotateVector(Vector2 vector, float angle)
