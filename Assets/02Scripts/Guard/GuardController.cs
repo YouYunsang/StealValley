@@ -22,14 +22,14 @@ public class GuardController : MonoBehaviour
     private float _searchSweepTimer;
 
     [Header("가드 대사")]
-    private const string ALERT_MESSAGE = "거기 누구야!";
-    private const string LOST_TARGET_MESSAGE = "어디갔어, 나와!";
+    private const string ALERT_MESSAGE = "거기 누구있어요?";
+    private const string LOST_TARGET_MESSAGE = "제발 돌려줘요..";
 
     private static readonly string[] CHASE_MESSAGES =
     {
         "제발 가져가지 마..",
         "그게 없으면 우린 굶어..",
-        "딱 걸렸어, 거기서!"
+        "그거 팔아도 얼마 안해.."
     };
 
     private const string SEARCH_MESSAGE = "분명 소리가 들렸는데..";

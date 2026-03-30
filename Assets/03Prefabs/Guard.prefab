@@ -617,11 +617,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38814e5474036504db36d583567a1357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GuardPatrol
-  _waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _loopPatrol: 1
+  _waypoints: []
+  _loopPatrol: 0
   _startFromClosestWaypoint: 1
 --- !u!114 &6643896739669329016
 MonoBehaviour:

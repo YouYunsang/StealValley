@@ -10,7 +10,7 @@ public class GuardAlertBubble : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _alertText;
 
     [Header("Text")]
-    [SerializeField] private string _defaultAlertMessage = "거기 누구야!";
+    [SerializeField] private string _defaultAlertMessage = "거기 누구있어요?";
 
     [Header("Timing")]
     [SerializeField] private float _showDuration = 0.8f;
