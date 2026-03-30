@@ -89,6 +89,10 @@ public class GuardController : MonoBehaviour
                 UpdatePatrolSearchState();
                 break;
 
+            case GuardState.Alert:
+                UpdateAlertState();
+                break;
+
             case GuardState.Investigate:
                 UpdateInvestigateState();
                 break;
@@ -109,20 +113,22 @@ public class GuardController : MonoBehaviour
 
     private void HandleHeardNoise(Vector2 heardPosition)
     {
-        // 추격 중이 아닐 때만 소리 조사 상태로 반응한다.
+        // 마지막으로 들은 소리 위치를 갱신한다.
         _lastHeardPosition = heardPosition;
 
+        // 추격 중에는 소리보다 시야 추적이 우선이다.
         if (_currentState == GuardState.Chase)
         {
             return;
         }
 
-        EnterInvestigateState(_lastHeardPosition);
+        // 소리를 들었을 때는 즉시 조사하지 않고 Alert 상태로 먼저 반응한다.
+        EnterAlertState(_lastHeardPosition);
     }
 
     private void HandlePlayerDetected(Vector2 detectedPlayerPosition)
     {
-        // 플레이어를 확실히 포착하면 실시간 추격 상태로 전환한다.
+        // 플레이어를 직접 시야로 포착하면 Alert를 건너뛰고 즉시 추격한다.
         _lastHeardPosition = detectedPlayerPosition;
         EnterChaseState();
     }
@@ -188,6 +194,22 @@ public class GuardController : MonoBehaviour
         // 순찰 수색이 끝나면 다음 웨이포인트로 이동한다.
         _patrol.MoveToNextWaypoint();
         EnterPatrolState();
+    }
+
+    private void UpdateAlertState()
+    {
+        // Alert 동안에는 이동하지 않고 마지막으로 소리를 들은 방향을 바라본다.
+        UpdateFacingDirectionTo(_lastHeardPosition);
+
+        _searchTimer -= Time.deltaTime;
+
+        if (_searchTimer > 0f)
+        {
+            return;
+        }
+
+        // Alert 시간이 끝나면 마지막 소리 위치를 조사하러 이동한다.
+        EnterInvestigateState(_lastHeardPosition);
     }
 
     private void UpdateInvestigateState()
@@ -269,6 +291,17 @@ public class GuardController : MonoBehaviour
         _searchBaseFacingDirection = _facingDirection;
 
         _movement.ClearTargetPosition();
+    }
+
+    private void EnterAlertState(Vector2 alertPosition)
+    {
+        // 소리를 감지하면 잠시 멈춰 반응하는 Alert 상태로 진입한다.
+        _currentState = GuardState.Alert;
+        _lastHeardPosition = alertPosition;
+        _searchTimer = _guardData.AlertDuration;
+
+        _movement.ClearTargetPosition();
+        UpdateFacingDirectionTo(_lastHeardPosition);
     }
 
     private void EnterInvestigateState(Vector2 investigatePosition)

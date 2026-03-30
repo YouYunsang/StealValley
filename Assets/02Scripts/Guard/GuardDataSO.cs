@@ -13,6 +13,7 @@ public class GuardDataSO : ScriptableObject
     [SerializeField] private float _returnMoveSpeed = 2.4f;
 
     [Header("State")]
+    [SerializeField] private float _alertDuration = 0.5f;
     [SerializeField] private float _searchDuration = 2.0f;
     [SerializeField] private float _patrolSearchDuration = 1.0f;
 
@@ -43,6 +44,7 @@ public class GuardDataSO : ScriptableObject
     public float ChaseMoveSpeed => _chaseMoveSpeed;
     public float ReturnMoveSpeed => _returnMoveSpeed;
 
+    public float AlertDuration => _alertDuration;
     public float SearchDuration => _searchDuration;
     public float PatrolSearchDuration => _patrolSearchDuration;
     public float SearchSweepAngle => _searchSweepAngle;
