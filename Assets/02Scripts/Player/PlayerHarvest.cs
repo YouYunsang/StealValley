@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerInteraction))]
 [RequireComponent(typeof(PlayerNoiseEmitter))]
+[RequireComponent(typeof(PlayerInputLock))]
 public class PlayerHarvest : MonoBehaviour
 {
     [SerializeField] private bool _showDebugLog = true;
@@ -10,6 +11,7 @@ public class PlayerHarvest : MonoBehaviour
     private PlayerInputReader _inputReader;
     private PlayerInteraction _interaction;
     private PlayerNoiseEmitter _noiseEmitter;
+    private PlayerInputLock _inputLock;
 
     private Crop _currentTargetCrop;
     private float _currentHarvestTime;
@@ -30,6 +32,7 @@ public class PlayerHarvest : MonoBehaviour
         _inputReader = GetComponent<PlayerInputReader>();
         _interaction = GetComponent<PlayerInteraction>();
         _noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+        _inputLock = GetComponent<PlayerInputLock>();
     }
 
     private void OnEnable()
@@ -59,7 +62,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void HandleCropSelected(Crop crop)
     {
-        // 새로운 작물이 선택되면 현재 수확 대상을 갱신하고 진행을 초기화한다.
         if (_currentTargetCrop == crop)
         {
             return;
@@ -79,7 +81,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void HandleCropSelectionCleared()
     {
-        // 선택이 해제되면 수확도 즉시 중단하고 초기화한다.
         if (_showDebugLog && _currentTargetCrop != null && _isHarvesting)
         {
             Debug.Log(
@@ -94,21 +95,29 @@ public class PlayerHarvest : MonoBehaviour
 
     private void HandleHarvest()
     {
-        // 현재 유효한 수확 대상이 없으면 아무 것도 하지 않는다.
+        // 전역 입력 잠금 상태면 진행 중 수확도 즉시 중단한다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            if (_isHarvesting || _currentHarvestTime > 0f)
+            {
+                ResetHarvestProgress(true);
+            }
+
+            return;
+        }
+
         if (_currentTargetCrop == null || !_currentTargetCrop.CanHarvest)
         {
             ResetHarvestProgress(true);
             return;
         }
 
-        // 좌클릭을 홀드하는 동안만 수확을 진행한다.
         if (_inputReader.IsClickPressed)
         {
             ProcessHarvest();
             return;
         }
 
-        // 홀드를 해제하면 수확 진행도를 초기화한다.
         if (_isHarvesting || _currentHarvestTime > 0f)
         {
             if (_showDebugLog)
@@ -125,7 +134,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void ProcessHarvest()
     {
-        // 수확 시작 시 한 번만 상태를 전환한다.
         if (!_isHarvesting)
         {
             _isHarvesting = true;
@@ -140,10 +148,8 @@ public class PlayerHarvest : MonoBehaviour
             }
         }
 
-        // 수확 시간을 누적한다.
         _currentHarvestTime += Time.deltaTime;
 
-        // 목표 시간을 채우면 수확 완료 처리한다.
         if (_currentHarvestTime < _currentTargetCrop.GetHarvestDuration())
         {
             return;
@@ -154,7 +160,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void CompleteHarvest()
     {
-        // 작물 수확을 완료한다.
         if (_showDebugLog)
         {
             Debug.Log(
@@ -172,7 +177,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void ResetHarvestProgress(bool restoreNoiseState)
     {
-        // 현재 수확 진행 상태를 초기화한다.
         _isHarvesting = false;
         _currentHarvestTime = 0f;
 
@@ -184,6 +188,12 @@ public class PlayerHarvest : MonoBehaviour
 
     private void RestoreNoiseState()
     {
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            _noiseEmitter.UpdateNoiseState(PlayerNoiseState.Idle);
+            return;
+        }
+
         bool isMoving = _inputReader.MoveInput.sqrMagnitude > 0f;
 
         if (_inputReader.IsStealthPressed && isMoving)

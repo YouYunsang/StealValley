@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerHarvest))]
 [RequireComponent(typeof(PlayerHide))]
 [RequireComponent(typeof(PlayerCarryWeight))]
-
+[RequireComponent(typeof(PlayerInputLock))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerMovementDataSO _movementData;
@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private PlayerHarvest _harvest;
     private PlayerHide _hide;
     private PlayerCarryWeight _carryWeight;
+    private PlayerInputLock _inputLock;
 
     public Vector2 CurrentMoveInput { get; private set; }
     public bool IsMoving => CurrentMoveInput.sqrMagnitude > 0f;
@@ -25,18 +26,19 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        // 같은 오브젝트 내부 컴포넌트 캐싱
+        // 같은 오브젝트 내부 컴포넌트를 캐싱한다.
         _inputReader = GetComponent<PlayerInputReader>();
         _movement = GetComponent<PlayerMovement>();
         _noiseEmitter = GetComponent<PlayerNoiseEmitter>();
         _harvest = GetComponent<PlayerHarvest>();
         _hide = GetComponent<PlayerHide>();
         _carryWeight = GetComponent<PlayerCarryWeight>();
+        _inputLock = GetComponent<PlayerInputLock>();
     }
 
     private void Start()
     {
-        // 외부 데이터 참조 검증
+        // 외부 데이터 참조를 검증한다.
         if (_movementData == null)
         {
             Debug.LogError($"{nameof(PlayerController)}: PlayerMovementDataSO가 할당되지 않았습니다.", this);
@@ -56,6 +58,15 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMoveInput()
     {
+        // 전역 입력 잠금 상태면 이동 입력을 막는다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            CurrentMoveInput = Vector2.zero;
+            IsStealthing = false;
+            _movement.SetMoveDirection(Vector2.zero);
+            return;
+        }
+
         if (IsActionLocked)
         {
             CurrentMoveInput = Vector2.zero;
@@ -64,16 +75,14 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // InputReader에서 받은 입력값을 정제한다.
+        // 입력값을 정제한다.
         Vector2 rawInput = _inputReader.MoveInput;
 
-        // 너무 작은 입력은 무시해서 미세 떨림을 방지한다.
         if (rawInput.magnitude < _movementData.InputDeadZone)
         {
             rawInput = Vector2.zero;
         }
 
-        // 대각선 이동 속도 보정을 위해 정규화한다.
         Vector2 moveDirection = rawInput == Vector2.zero ? Vector2.zero : rawInput.normalized;
 
         CurrentMoveInput = moveDirection;
@@ -84,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateMoveSpeed()
     {
-        if(IsActionLocked)
+        if (IsActionLocked)
         {
             _movement.SetMoveSpeed(_movementData.MoveSpeed);
             return;
@@ -109,11 +118,16 @@ public class PlayerController : MonoBehaviour
         );
 
         _movement.SetMoveSpeed(finalMoveSpeed);
-        Debug.LogFormat("final movespeed = {0}", finalMoveSpeed);
     }
 
     private void UpdateNoiseState()
     {
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            _noiseEmitter.UpdateNoiseState(PlayerNoiseState.Idle);
+            return;
+        }
+
         if (_harvest != null && _harvest.IsHarvesting)
         {
             _noiseEmitter.UpdateNoiseState(PlayerNoiseState.Harvest);

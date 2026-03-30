@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3797548345690155082}
   - component: {fileID: 7503253186095691222}
   - component: {fileID: 1217029236144725155}
+  - component: {fileID: 962094348703377232}
   m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
@@ -152,6 +153,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &962094348703377232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4756118060980437567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ff9f017c523a84daf53552884074a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBasketInteraction
+  _basketUI: {fileID: 0}
 --- !u!1 &6468300526880869941
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,6 +187,7 @@ GameObject:
   - component: {fileID: 4240995941735701380}
   - component: {fileID: 6007165224248474281}
   - component: {fileID: 1072317778979412653}
+  - component: {fileID: 1666078808808751303}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -385,6 +400,20 @@ MonoBehaviour:
   _cropDropManager: {fileID: 0}
   _cropData: {fileID: 11400000, guid: ca455268b4ef5e64c92dafeb937225d1, type: 2}
   _dropForwardDistance: 0.6
+  _showDebugLog: 1
+--- !u!114 &1666078808808751303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6468300526880869941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d044eaea78a6c1a43b50c1aa67bc3244, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputLock
+  _gameManager: {fileID: 0}
   _showDebugLog: 1
 --- !u!1 &8738705921980678246
 GameObject:

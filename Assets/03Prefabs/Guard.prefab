@@ -620,6 +620,7 @@ MonoBehaviour:
   _waypoints:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   _loopPatrol: 1
   _startFromClosestWaypoint: 1
 --- !u!114 &6643896739669329016
@@ -648,6 +649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GuardCatcher
   _gameManager: {fileID: 0}
+  _runResultManager: {fileID: 0}
   _playerLayerMask:
     serializedVersion: 2
     m_Bits: 8

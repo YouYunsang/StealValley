@@ -3,6 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerInteraction))]
+[RequireComponent(typeof(PlayerInputLock))]
 public class PlayerHide : MonoBehaviour
 {
     [SerializeField] private PlayerHideDatdSO _hideData;
@@ -12,6 +13,7 @@ public class PlayerHide : MonoBehaviour
 
     private PlayerInputReader _inputReader;
     private PlayerInteraction _interaction;
+    private PlayerInputLock _inputLock;
 
     private Haystack _nearbyHaystack;
     private Haystack _activeHaystack;
@@ -33,6 +35,7 @@ public class PlayerHide : MonoBehaviour
     {
         _inputReader = GetComponent<PlayerInputReader>();
         _interaction = GetComponent<PlayerInteraction>();
+        _inputLock = GetComponent<PlayerInputLock>();
     }
 
     private void Start()
@@ -64,13 +67,22 @@ public class PlayerHide : MonoBehaviour
 
     public void ClearNearbyHaystack(Haystack haystack)
     {
-        if (_nearbyHaystack != haystack) return;
+        if (_nearbyHaystack != haystack)
+        {
+            return;
+        }
 
         _nearbyHaystack = null;
     }
 
     private void HandleHideState()
     {
+        // 전역 입력 잠금 상태면 숨기 관련 입력을 받지 않는다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            return;
+        }
+
         if (_isHidden)
         {
             HandleHiddenState();
@@ -130,13 +142,13 @@ public class PlayerHide : MonoBehaviour
     {
         Collider2D[] guardColliders = Physics2D.OverlapCircleAll(transform.position, _hideCheckRadius, _guardLayerMask);
 
-        for(int i = 0; i < guardColliders.Length; i++)
+        for (int i = 0; i < guardColliders.Length; i++)
         {
             if (guardColliders[i] == null) continue;
 
             GuardSensor guardSensor = guardColliders[i].GetComponentInParent<GuardSensor>();
 
-            if(guardSensor == null) continue;
+            if (guardSensor == null) continue;
 
             if (guardSensor.CanSeeTarget(transform.position)) return false;
         }
@@ -150,7 +162,7 @@ public class PlayerHide : MonoBehaviour
         _isHidden = true;
         _hideTimer = 0f;
 
-        if(_activeHaystack != null)
+        if (_activeHaystack != null)
         {
             transform.position = _activeHaystack.HidePosition;
         }
@@ -179,7 +191,7 @@ public class PlayerHide : MonoBehaviour
     {
         _isHidden = false;
 
-        if(_activeHaystack != null )
+        if (_activeHaystack != null)
         {
             transform.position = _activeHaystack.ExitPosition;
         }

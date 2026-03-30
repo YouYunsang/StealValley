@@ -2,6 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(PlayerInputLock))]
 public class PlayerDropHarvest : MonoBehaviour
 {
     [Header("References")]
@@ -15,12 +16,14 @@ public class PlayerDropHarvest : MonoBehaviour
 
     private PlayerInputReader _inputReader;
     private PlayerController _playerController;
+    private PlayerInputLock _inputLock;
 
     private void Awake()
     {
         // 같은 오브젝트 내부 컴포넌트를 캐싱한다.
         _inputReader = GetComponent<PlayerInputReader>();
         _playerController = GetComponent<PlayerController>();
+        _inputLock = GetComponent<PlayerInputLock>();
     }
 
     private void Start()
@@ -55,13 +58,17 @@ public class PlayerDropHarvest : MonoBehaviour
 
     private void HandleDropInput()
     {
-        // F키를 누른 프레임에만 버리기를 시도한다.
+        // 전역 입력 잠금 상태면 버리기를 막는다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            return;
+        }
+
         if (!_inputReader.WasDropPressedThisFrame)
         {
             return;
         }
 
-        // 현재 행동이 잠겨 있으면 버릴 수 없다.
         if (_playerController != null && _playerController.IsActionLocked)
         {
             return;
@@ -72,7 +79,6 @@ public class PlayerDropHarvest : MonoBehaviour
 
     private void TryDropHarvest()
     {
-        // 보유 작물 1개 감소에 성공했을 때만 드롭 아이템을 생성한다.
         bool removed = _harvestCountManager.TryRemoveHarvest(_cropData, 1);
 
         if (!removed)
@@ -101,7 +107,7 @@ public class PlayerDropHarvest : MonoBehaviour
 
     private Vector2 GetDropDirection()
     {
-        // 이동 중이면 이동 방향 앞으로 버리고, 멈춰 있으면 오른쪽으로 기본 버리기 방향을 사용한다.
+        // 이동 중이면 이동 반대 방향으로 버리고, 멈춰 있으면 오른쪽을 기본 방향으로 사용한다.
         Vector2 moveInput = _playerController != null ? _playerController.CurrentMoveInput : Vector2.zero;
 
         if (moveInput.sqrMagnitude > 0.0001f)

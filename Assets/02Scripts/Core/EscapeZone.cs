@@ -8,6 +8,7 @@ public class EscapeZone : MonoBehaviour
     [SerializeField] private GameManager _gameManager;
     [SerializeField] private RunResultManager _runResultManager;
     [SerializeField] private EscapeConfirmUI _escapeConfirmUI;
+    [SerializeField] private PlayerInputLock _playerInputLock;
     [SerializeField] private LayerMask _playerLayerMask;
 
     [Header("Settings")]
@@ -40,6 +41,13 @@ public class EscapeZone : MonoBehaviour
         if (_escapeConfirmUI == null)
         {
             Debug.LogError($"{nameof(EscapeZone)}: EscapeConfirmUI가 할당되지 않았습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        if (_playerInputLock == null)
+        {
+            Debug.LogError($"{nameof(EscapeZone)}: PlayerInputLock이 할당되지 않았습니다.", this);
             enabled = false;
             return;
         }
@@ -97,6 +105,7 @@ public class EscapeZone : MonoBehaviour
         _isEscapePromptOpen = false;
         Time.timeScale = 1f;
         _escapeConfirmUI.Hide();
+        _playerInputLock.Unlock(PlayerInputLockReason.EscapePrompt);
 
         _runResultManager.RecordSuccessResult();
         _gameManager.SuccessRun();
@@ -104,7 +113,6 @@ public class EscapeZone : MonoBehaviour
 
     public void CancelEscape()
     {
-        // 탈출을 취소하면 UI를 닫고, 잠시 동안 EscapeZone을 다시 트리거하지 않게 만든다.
         if (_showDebugLog)
         {
             Debug.Log("Escape Cancelled - Player chose to stay", this);
@@ -113,16 +121,18 @@ public class EscapeZone : MonoBehaviour
         _isEscapePromptOpen = false;
         Time.timeScale = 1f;
         _escapeConfirmUI.Hide();
+        _playerInputLock.Unlock(PlayerInputLockReason.EscapePrompt);
 
         StartReactivationDelay();
     }
 
     private void OpenEscapePrompt()
     {
-        // 탈출 확인 UI를 열고 게임 시간을 느리게 만든다.
+        // 탈출 확인 UI를 열고 시간 감속 및 입력 잠금을 건다.
         _isEscapePromptOpen = true;
         Time.timeScale = _escapeSlowTimeScale;
         _escapeConfirmUI.Show(this);
+        _playerInputLock.Lock(PlayerInputLockReason.EscapePrompt);
 
         if (_showDebugLog)
         {
@@ -132,7 +142,6 @@ public class EscapeZone : MonoBehaviour
 
     private void StartReactivationDelay()
     {
-        // 기존 재활성화 코루틴이 있으면 정리하고 새로 시작한다.
         if (_reactivationCoroutine != null)
         {
             StopCoroutine(_reactivationCoroutine);

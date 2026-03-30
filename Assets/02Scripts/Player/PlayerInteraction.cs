@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputReader))]
+[RequireComponent(typeof(PlayerInputLock))]
 public class PlayerInteraction : MonoBehaviour
 {
     private const int INTERACTION_CELL_RANGE = 1;
@@ -11,6 +12,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private PlayerInputReader _inputReader;
     private PlayerHide _hide;
+    private PlayerInputLock _inputLock;
 
     private Crop _selectedCrop;
     private Vector3Int _selectedCellPosition;
@@ -27,6 +29,7 @@ public class PlayerInteraction : MonoBehaviour
         // 같은 오브젝트 내부 컴포넌트를 캐싱한다.
         _inputReader = GetComponent<PlayerInputReader>();
         _hide = GetComponent<PlayerHide>();
+        _inputLock = GetComponent<PlayerInputLock>();
     }
 
     private void Start()
@@ -54,12 +57,18 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleCropSelection()
     {
+        // 전역 입력 잠금 상태면 선택을 막고 현재 선택을 해제한다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            ClearSelection();
+            return;
+        }
+
         if (_hide != null && _hide.IsInteractionLocked)
         {
             return;
         }
 
-        // 클릭이 시작된 프레임에만 선택을 시도한다.
         if (!_inputReader.WasClickPressedThisFrame)
         {
             return;
@@ -71,14 +80,12 @@ public class PlayerInteraction : MonoBehaviour
         Vector3Int clickedCellPosition = _cropManager.WorldToCell(pointerWorldPosition);
         Vector3Int playerCellPosition = _cropManager.WorldToCell(transform.position);
 
-        // 플레이어 기준 3x3 범위 밖이면 선택을 무시한다.
         if (!IsWithinInteractionRange(playerCellPosition, clickedCellPosition))
         {
             ClearSelection();
             return;
         }
 
-        // 클릭한 셀에 수확 가능한 Crop이 있으면 선택한다.
         if (_cropManager.TryGetCropAtCell(clickedCellPosition, out Crop crop))
         {
             _selectedCrop = crop;
@@ -93,7 +100,6 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool IsWithinInteractionRange(Vector3Int playerCellPosition, Vector3Int targetCellPosition)
     {
-        // 체비쇼 거리 1 이내인지 검사한다.
         int deltaX = Mathf.Abs(playerCellPosition.x - targetCellPosition.x);
         int deltaY = Mathf.Abs(playerCellPosition.y - targetCellPosition.y);
 

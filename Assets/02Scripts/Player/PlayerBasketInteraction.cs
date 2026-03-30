@@ -1,7 +1,5 @@
 using UnityEngine;
 
-//[RequireComponent(typeof(PlayerInputReader))]
-//[RequireComponent(typeof(PlayerController))]
 public class PlayerBasketInteraction : MonoBehaviour
 {
     [Header("References")]
@@ -9,6 +7,7 @@ public class PlayerBasketInteraction : MonoBehaviour
 
     private PlayerInputReader _inputReader;
     private PlayerController _playerController;
+    private PlayerInputLock _inputLock;
 
     private BasketController _nearbyBasket;
 
@@ -19,6 +18,7 @@ public class PlayerBasketInteraction : MonoBehaviour
     {
         _inputReader = GetComponentInParent<PlayerInputReader>();
         _playerController = GetComponentInParent<PlayerController>();
+        _inputLock = GetComponentInParent<PlayerInputLock>();
     }
 
     private void Start()
@@ -53,6 +53,12 @@ public class PlayerBasketInteraction : MonoBehaviour
 
     private void HandleBasketInteraction()
     {
+        // 전역 입력 잠금 상태면 바구니 상호작용을 막는다.
+        if (_inputLock != null && _inputLock.IsGameplayInputLocked)
+        {
+            return;
+        }
+
         if (!_inputReader.WasInteractPressedThisFrame)
         {
             return;
