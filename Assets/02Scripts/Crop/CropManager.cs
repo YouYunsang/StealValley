@@ -1,10 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class CropManager : MonoBehaviour
 {
+    [Header("Grid")]
     [SerializeField] private Grid _grid;
     [SerializeField] private Transform _cropRoot;
+
+    [Header("Drop")]
+    [SerializeField] private CropDropManager _cropDropManager;
 
     private readonly Dictionary<Vector3Int, Crop> _cropByCell = new Dictionary<Vector3Int, Crop>();
 
@@ -27,7 +32,27 @@ public class CropManager : MonoBehaviour
             return;
         }
 
+        if (_cropDropManager == null)
+        {
+            Debug.LogError($"{nameof(CropManager)}: CropDropManager가 할당되지 않았습니다.", this);
+            enabled = false;
+            return;
+        }
+
         BuildCropMap();
+    }
+
+    private void OnDisable()
+    {
+        foreach(KeyValuePair<Vector3Int, Crop> pair in _cropByCell)
+        {
+            if(pair.Value == null)
+            {
+                continue;
+            }
+
+            pair.Value.OnHarvested -= HandleCropHarvested;
+        }
     }
 
     public bool TryGetCropAtCell(Vector3Int cellPosition, out Crop crop)
@@ -82,5 +107,17 @@ public class CropManager : MonoBehaviour
         }
 
         _cropByCell.Add(cellPosition, crop);
+
+        crop.OnHarvested += HandleCropHarvested;
+    }
+
+    private void HandleCropHarvested(Crop harvestedCrop)
+    {
+        if (harvestedCrop == null) return;
+
+        _cropDropManager.SpawnHarvestDrop(
+            harvestedCrop.CropData,
+            harvestedCrop.DropSpawnPoint.position
+        );
     }
 }

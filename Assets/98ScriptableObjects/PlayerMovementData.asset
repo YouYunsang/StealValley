@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementDataSO
   _moveSpeed: 3.4
   _stealthMoveSpeed: 2
+  _moveSpeedDecreasePerCrop: 0.03
+  _minMoveSpeed: 2
+  _minStealthMoveSpeed: 1
   _inputDeadZone: 0.15

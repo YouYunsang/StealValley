@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerNoiseEmitter))]
 public class PlayerHarvest : MonoBehaviour
 {
-    [SerializeField] private FarmProgressManager _farmProgressManager;
     [SerializeField] private bool _showDebugLog = true;
 
     private PlayerInputReader _inputReader;
@@ -31,16 +30,6 @@ public class PlayerHarvest : MonoBehaviour
         _inputReader = GetComponent<PlayerInputReader>();
         _interaction = GetComponent<PlayerInteraction>();
         _noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-    }
-
-    private void Start()
-    {
-        if (_farmProgressManager == null)
-        {
-            Debug.LogError($"{nameof(PlayerHarvest)}: FarmProgressManager가 할당되지 않았습니다.", this);
-            enabled = false;
-            return;
-        }
     }
 
     private void OnEnable()
@@ -165,8 +154,6 @@ public class PlayerHarvest : MonoBehaviour
 
     private void CompleteHarvest()
     {
-        float progressAmount = _currentTargetCrop.GetProgressAmount();
-
         // 작물 수확을 완료한다.
         if (_showDebugLog)
         {
@@ -175,8 +162,6 @@ public class PlayerHarvest : MonoBehaviour
                 _currentTargetCrop
             );
         }
-
-        _farmProgressManager.AddProgress(progressAmount);
 
         _currentTargetCrop.Harvest();
         _interaction.ClearSelection();

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6d4b92d2c30b7488b440b36e34c498, type: 3}
+  m_Name: CropDropItemData
+  m_EditorClassIdentifier: Assembly-CSharp::CropDropItemDataSO
+  _spawnHeight: 0.6
+  _spawnDuration: 0.3
+  _spawnRandomOffsetX: 0.35
+  _landBounceScale: 1.08
+  _landBounceDuration: 0.1
+  _absorbRange: 0.8
+  _absorbDuration: 0.18
+  _absorbScale: 0.2
+  _lifeTime: 6
+  _expireFadeDuration: 3

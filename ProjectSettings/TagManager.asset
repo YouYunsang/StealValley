@@ -44,6 +44,21 @@ TagManager:
   - name: visible
     uniqueID: 3390212805
     locked: 0
+  - name: third
+    uniqueID: 64391271
+    locked: 0
+  - name: fourth
+    uniqueID: 148140849
+    locked: 0
+  - name: fifth
+    uniqueID: 1976319247
+    locked: 0
+  - name: sixth
+    uniqueID: 3392612519
+    locked: 0
+  - name: Interactive
+    uniqueID: 1523936939
+    locked: 0
   - name: UI
     uniqueID: 4128539485
     locked: 0

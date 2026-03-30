@@ -1,14 +1,19 @@
+using System;
 using UnityEngine;
 
 public class Crop : MonoBehaviour
 {
     [SerializeField] private CropDataSO _cropData;
+    [SerializeField] private Transform _dropSpawnPoint;
 
     private bool _isHarvested;
 
     public CropDataSO CropData => _cropData;
     public bool IsHarvested => _isHarvested;
     public bool CanHarvest => _cropData != null && !_isHarvested;
+    public Transform DropSpawnPoint => _dropSpawnPoint != null ? _dropSpawnPoint : transform;
+
+    public event Action<Crop> OnHarvested;
 
     private void Awake()
     {
@@ -23,6 +28,11 @@ public class Crop : MonoBehaviour
         {
             Debug.LogError($"{nameof(Crop)}: CropDataSO가 할당되지 않았습니다.", this);
             enabled = false;
+        }
+
+        if(_dropSpawnPoint == null)
+        {
+            _dropSpawnPoint = transform;
         }
     }
 
@@ -54,6 +64,8 @@ public class Crop : MonoBehaviour
 
         // 수확 완료 상태로 전환한다.
         _isHarvested = true;
+
+        OnHarvested?.Invoke(this);
 
         // 테스트 단계에서는 오브젝트를 비활성화한다.
         gameObject.SetActive(false);

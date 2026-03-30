@@ -313,17 +313,18 @@ public class GuardController : MonoBehaviour
             _alertBubble.HideImmediate();
 
         }
+
+        if (_alertBubble != null)
+        {
+            _alertBubble.ShowAlertText(ALERT_MESSAGE);
+        }
+
         _currentState = GuardState.Alert;
         _lastHeardPosition = alertPosition;
         _searchTimer = _guardData.AlertDuration;
 
         _movement.ClearTargetPosition();
         UpdateFacingDirectionTo(_lastHeardPosition);
-
-        if (_alertBubble != null)
-        {
-            _alertBubble.ShowAlertText(ALERT_MESSAGE);
-        }
     }
 
     private void EnterInvestigateState(Vector2 investigatePosition, bool showBubble, string bubbleMessage)

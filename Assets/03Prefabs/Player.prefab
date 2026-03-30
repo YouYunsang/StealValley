@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8626553609858375059}
   - component: {fileID: 3797548345690155082}
   - component: {fileID: 7503253186095691222}
+  - component: {fileID: 1217029236144725155}
   m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
@@ -28,8 +29,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8123738040602063694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -78,8 +79,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -904754491
-  m_SortingLayer: 1
+  m_SortingLayerID: 1523936939
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
@@ -127,8 +128,30 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 4, y: 7.1}
   m_Direction: 0
+--- !u!95 &1217029236144725155
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4756118060980437567}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 32639bb6a5124a14e932f48be5843a05, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6468300526880869941
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,6 +170,9 @@ GameObject:
   - component: {fileID: 1171051317065249349}
   - component: {fileID: 2389823667319097418}
   - component: {fileID: 4428316758528964624}
+  - component: {fileID: 4240995941735701380}
+  - component: {fileID: 6007165224248474281}
+  - component: {fileID: 1072317778979412653}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -215,6 +241,7 @@ MonoBehaviour:
   _pointerPositionAction: {fileID: -7682116276112450283, guid: 4bc95216cb6abca4aa5dc4fe70b86676, type: 3}
   _clickAction: {fileID: -5324749249451601230, guid: 4bc95216cb6abca4aa5dc4fe70b86676, type: 3}
   _interactAction: {fileID: 3736000957071078516, guid: 4bc95216cb6abca4aa5dc4fe70b86676, type: 3}
+  _dropAction: {fileID: -2691431526281490454, guid: 4bc95216cb6abca4aa5dc4fe70b86676, type: 3}
 --- !u!114 &5417028237015642597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,7 +306,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2381a53e132bc4bbaa3053d3bc7ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHarvest
-  _farmProgressManager: {fileID: 0}
   _showDebugLog: 1
 --- !u!114 &2389823667319097418
 MonoBehaviour:
@@ -314,6 +340,51 @@ MonoBehaviour:
   _soundwaveParticle: {fileID: 4170674235787538545}
   _radiusToStartSizeMultiplier: 3.5
   _stopWhenRadiusZero: 1
+  _showDebugLog: 1
+--- !u!114 &4240995941735701380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6468300526880869941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c03883cb8b58b1449bc436f3af7c05bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCarryWeight
+  _movementData: {fileID: 11400000, guid: 918df1acd5f8fa84f8a090db3d787f8c, type: 2}
+  _harvestCountManager: {fileID: 0}
+  _showDebugLog: 1
+--- !u!114 &6007165224248474281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6468300526880869941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b6c9582379245543ade5782baf3fb91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
+  _animator: {fileID: 1217029236144725155}
+--- !u!114 &1072317778979412653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6468300526880869941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2376ba0243f40f341be4b536be28af9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDropHarvest
+  _harvestCountManager: {fileID: 0}
+  _cropDropManager: {fileID: 0}
+  _cropData: {fileID: 11400000, guid: ca455268b4ef5e64c92dafeb937225d1, type: 2}
+  _dropForwardDistance: 0.6
   _showDebugLog: 1
 --- !u!1 &8738705921980678246
 GameObject:

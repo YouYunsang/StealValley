@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerNoiseEmitter))]
 [RequireComponent(typeof(PlayerHarvest))]
 [RequireComponent(typeof(PlayerHide))]
+[RequireComponent(typeof(PlayerCarryWeight))]
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private PlayerNoiseEmitter _noiseEmitter;
     private PlayerHarvest _harvest;
     private PlayerHide _hide;
+    private PlayerCarryWeight _carryWeight;
 
     public Vector2 CurrentMoveInput { get; private set; }
     public bool IsMoving => CurrentMoveInput.sqrMagnitude > 0f;
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
         _noiseEmitter = GetComponent<PlayerNoiseEmitter>();
         _harvest = GetComponent<PlayerHarvest>();
         _hide = GetComponent<PlayerHide>();
+        _carryWeight = GetComponent<PlayerCarryWeight>();
     }
 
     private void Start()
@@ -87,13 +90,26 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        float speedPenalty = _carryWeight != null ? _carryWeight.CurrentSpeedPenalty : 0f;
+
         if (IsStealthing)
         {
-            _movement.SetMoveSpeed(_movementData.StealthMoveSpeed);
+            float finalStealthSpeed = Mathf.Max(
+                _movementData.StealthMoveSpeed - speedPenalty,
+                _movementData.MinStealthMoveSpeed
+            );
+
+            _movement.SetMoveSpeed(finalStealthSpeed);
             return;
         }
 
-        _movement.SetMoveSpeed(_movementData.MoveSpeed);
+        float finalMoveSpeed = Mathf.Max(
+            _movementData.MoveSpeed - speedPenalty,
+            _movementData.MinMoveSpeed
+        );
+
+        _movement.SetMoveSpeed(finalMoveSpeed);
+        Debug.LogFormat("final movespeed = {0}", finalMoveSpeed);
     }
 
     private void UpdateNoiseState()
