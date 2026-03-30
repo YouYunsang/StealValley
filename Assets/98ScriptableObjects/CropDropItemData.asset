@@ -20,5 +20,5 @@ MonoBehaviour:
   _absorbRange: 0.8
   _absorbDuration: 0.18
   _absorbScale: 0.2
-  _lifeTime: 6
+  _lifeTime: 10
   _expireFadeDuration: 3

@@ -164,9 +164,9 @@ GameObject:
   - component: {fileID: 2881311937673186909}
   - component: {fileID: 2177638418221823376}
   - component: {fileID: 5417028237015642597}
+  - component: {fileID: 6134576051337272027}
   - component: {fileID: 5135696336442307478}
   - component: {fileID: 4420213690939802232}
-  - component: {fileID: 6134576051337272027}
   - component: {fileID: 1171051317065249349}
   - component: {fileID: 2389823667319097418}
   - component: {fileID: 4428316758528964624}
@@ -254,6 +254,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c25ffbea65e00cb4db7555a094f7f8bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+--- !u!114 &6134576051337272027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6468300526880869941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17a58c8b9af4c1749955eb333d9e3a94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  _cropManager: {fileID: 0}
+  _targetCamera: {fileID: 0}
 --- !u!114 &5135696336442307478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,20 +294,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerNoiseEmitter
   _noiseData: {fileID: 11400000, guid: 1eddc348e1daf7c4481e7ac24814210c, type: 2}
---- !u!114 &6134576051337272027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6468300526880869941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a58c8b9af4c1749955eb333d9e3a94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  _cropManager: {fileID: 0}
-  _targetCamera: {fileID: 0}
 --- !u!114 &1171051317065249349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +435,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
+      propertyPath: lengthInSec
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
       propertyPath: EmissionModule.m_BurstCount
       value: 3
       objectReference: {fileID: 0}
@@ -455,12 +459,16 @@ PrefabInstance:
       value: 0.21568628
       objectReference: {fileID: 0}
     - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.a
+      value: 0.16470589
+      objectReference: {fileID: 0}
+    - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[1].time
       value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[2].time
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5410703605901925024, guid: 067a62a5dd4db1d4a9bfbe4427a736f0, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[1].countCurve.scalar

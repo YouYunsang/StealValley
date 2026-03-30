@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437fd889a8debba4ebcadd63f510f1d4, type: 3}
   m_Name: GuardData
   m_EditorClassIdentifier: Assembly-CSharp::GuardDataSO
-  _patrolMoveSpeed: 1.5
+  _patrolMoveSpeed: 1.3
   _investigateMoveSpeed: 2
   _chaseMoveSpeed: 2.3
   _returnMoveSpeed: 1.5
   _alertDuration: 0.5
-  _searchDuration: 2
+  _searchDuration: 3
   _patrolSearchDuration: 1.5
   _searchSweepAngle: 120
   _searchSweepSpeed: 0.3
@@ -27,7 +27,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _arrivalThreshold: 0.1
-  _viewDistance: 2.5
+  _viewDistance: 2.3
   _viewAngle: 50
   _showVisionGizmo: 1
   _showSensorGizmo: 1

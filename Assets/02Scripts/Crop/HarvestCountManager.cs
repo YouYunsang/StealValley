@@ -54,6 +54,37 @@ public class HarvestCountManager : MonoBehaviour
         return true;
     }
 
+    public int RemoveAllHarvest(CropDataSO cropData)
+    {
+        // 유효하지 않은 요청이면 0을 반환한다.
+        if (cropData == null)
+        {
+            return 0;
+        }
+
+        if (_currentHarvestCount <= 0)
+        {
+            return 0;
+        }
+
+        int removedAmount = _currentHarvestCount;
+        _currentHarvestCount = 0;
+        _lastCollectedCropData = cropData;
+
+        if (_showDebugLog)
+        {
+            Debug.Log(
+                $"Harvest Count Removed All - Crop: {cropData.CropName}, Removed: {removedAmount}, Current Total: {_currentHarvestCount}",
+                this
+            );
+        }
+
+        OnHarvestRemoved?.Invoke(cropData, removedAmount);
+        OnHarvestCountChanged?.Invoke(_currentHarvestCount);
+
+        return removedAmount;
+    }
+
     public void ResetHarvestCount()
     {
         _currentHarvestCount = 0;
