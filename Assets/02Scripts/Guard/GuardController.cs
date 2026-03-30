@@ -21,6 +21,7 @@ public class GuardController : MonoBehaviour
     private Vector2 _searchBaseFacingDirection = Vector2.down;
     private float _searchSweepTimer;
 
+    [Header("가드 대사")]
     private const string ALERT_MESSAGE = "거기 누구야!";
     private const string LOST_TARGET_MESSAGE = "어디갔어, 나와!";
 
@@ -30,6 +31,8 @@ public class GuardController : MonoBehaviour
         "그게 없으면 우린 굶어..",
         "딱 걸렸어, 거기서!"
     };
+
+    private const string SEARCH_MESSAGE = "분명 소리가 들렸는데..";
 
     public GuardState CurrentState => _currentState;
     public Vector2 LastHearPosition => _lastHeardPosition;
@@ -276,6 +279,11 @@ public class GuardController : MonoBehaviour
     #region 상태 진입
     private void EnterPatrolState()
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
         _currentState = GuardState.Patrol;
         _movement.SetMoveType(GuardMoveType.Patrol);
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
@@ -285,6 +293,11 @@ public class GuardController : MonoBehaviour
 
     private void EnterPatrolSearchState()
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
         _currentState = GuardState.PatrolSearch;
         _searchTimer = _guardData.PatrolSearchDuration;
         _searchSweepTimer = 0f;
@@ -295,6 +308,11 @@ public class GuardController : MonoBehaviour
 
     private void EnterAlertState(Vector2 alertPosition)
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+
+        }
         _currentState = GuardState.Alert;
         _lastHeardPosition = alertPosition;
         _searchTimer = _guardData.AlertDuration;
@@ -310,6 +328,11 @@ public class GuardController : MonoBehaviour
 
     private void EnterInvestigateState(Vector2 investigatePosition, bool showBubble, string bubbleMessage)
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
         _currentState = GuardState.Investigate;
         _lastHeardPosition = investigatePosition;
         _movement.SetMoveType(GuardMoveType.Investigate);
@@ -319,12 +342,22 @@ public class GuardController : MonoBehaviour
 
         if (showBubble && _alertBubble != null)
         {
-            _alertBubble.ShowAlertText(bubbleMessage);
+            _alertBubble.ShowPersistentText(bubbleMessage);
         }
     }
 
     private void EnterSearchState()
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
+        if (_alertBubble != null)
+        {
+            _alertBubble.ShowPersistentText(SEARCH_MESSAGE);
+        }
+
         _currentState = GuardState.Search;
         _searchTimer = _guardData.SearchDuration;
         _searchSweepTimer = 0f;
@@ -335,6 +368,11 @@ public class GuardController : MonoBehaviour
 
     private void EnterReturnState()
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
         int closestWaypointIndex = _patrol.GetClosestWaypointIndex();
 
         _patrol.SetCurrentWaypointIndex(closestWaypointIndex);
@@ -348,6 +386,11 @@ public class GuardController : MonoBehaviour
 
     private void EnterChaseState()
     {
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
+
         // 추격 상태 진입 시 랜덤 문구를 골라 지속 표시한다.
         if (_alertBubble != null)
         {
