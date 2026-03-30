@@ -672,7 +672,7 @@ MonoBehaviour:
   _innerRadius: 0.7
   _sortingLayerName: Default
   _sortingOrder: 2
-  _visionColor: {r: 0.8559058, g: 0.89433956, b: 0.28180128, a: 0.28627452}
+  _visionColor: {r: 0.8559058, g: 0.89433956, b: 0.28180128, a: 1}
   _showDebugLog: 1
 --- !u!114 &8232559955932696483
 MonoBehaviour:
