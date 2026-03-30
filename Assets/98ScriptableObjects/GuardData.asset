@@ -16,11 +16,11 @@ MonoBehaviour:
   _investigateMoveSpeed: 2.6
   _chaseMoveSpeed: 2.6
   _returnMoveSpeed: 2.4
-  _alertDuration: 0.5
+  _alertDuration: 2
   _searchDuration: 3
   _patrolSearchDuration: 2
   _searchSweepAngle: 120
-  _searchSweepSpeed: 0.5
+  _searchSweepSpeed: 0.3
   _patrolSearchSweepAngle: 360
   _patrolSearchSweepSpeed: 0.5
   _playerLayerMask:
@@ -28,6 +28,6 @@ MonoBehaviour:
     m_Bits: 8
   _arrivalThreshold: 0.1
   _viewDistance: 3.5
-  _viewAngle: 70
+  _viewAngle: 50
   _showVisionGizmo: 1
   _showSensorGizmo: 1

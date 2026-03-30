@@ -6,6 +6,7 @@ using UnityEngine;
 public class GuardController : MonoBehaviour
 {
     [SerializeField] private GuardDataSO _guardData;
+    [SerializeField] private GuardAlertBubble _alertBubble;
 
     private GuardMovement _movement;
     private GuardPatrol _patrol;
@@ -19,6 +20,16 @@ public class GuardController : MonoBehaviour
 
     private Vector2 _searchBaseFacingDirection = Vector2.down;
     private float _searchSweepTimer;
+
+    private const string ALERT_MESSAGE = "거기 누구야!";
+    private const string LOST_TARGET_MESSAGE = "어디갔어, 나와!";
+
+    private static readonly string[] CHASE_MESSAGES =
+    {
+        "제발 가져가지 마..",
+        "그게 없으면 우린 굶어..",
+        "딱 걸렸어, 거기서!"
+    };
 
     public GuardState CurrentState => _currentState;
     public Vector2 LastHearPosition => _lastHeardPosition;
@@ -67,14 +78,18 @@ public class GuardController : MonoBehaviour
     private void OnDisable()
     {
         // 센서 이벤트 구독을 해제한다.
-        if (_sensor == null)
+        if (_sensor != null)
         {
-            return;
+            _sensor.OnHeardNoise -= HandleHeardNoise;
+            _sensor.OnPlayerDetected -= HandlePlayerDetected;
+            _sensor.OnPlayerLost -= HandlePlayerLost;
         }
 
-        _sensor.OnHeardNoise -= HandleHeardNoise;
-        _sensor.OnPlayerDetected -= HandlePlayerDetected;
-        _sensor.OnPlayerLost -= HandlePlayerLost;
+        // 비활성화 시 남아 있는 말풍선을 즉시 숨긴다.
+        if (_alertBubble != null)
+        {
+            _alertBubble.HideImmediate();
+        }
     }
 
     private void UpdateState()
@@ -135,14 +150,14 @@ public class GuardController : MonoBehaviour
 
     private void HandlePlayerLost()
     {
-        // 추격 중 플레이어를 놓치면 마지막 위치를 조사하러 간다.
+        // 추격 중 플레이어를 놓쳤을 때만 마지막 위치를 조사하러 간다.
         if (_currentState != GuardState.Chase)
         {
             return;
         }
 
         _lastHeardPosition = _sensor.LastDetectedPlayerPosition;
-        EnterInvestigateState(_lastHeardPosition);
+        EnterInvestigateState(_lastHeardPosition, true, LOST_TARGET_MESSAGE);
     }
 
     private void UpdateFacingDirectionTo(Vector2 targetPosition)
@@ -166,7 +181,6 @@ public class GuardController : MonoBehaviour
     #region 상태 도중 업데이트
     private void UpdatePatrolState()
     {
-        // 순찰 지점에 도착하면 즉시 다음 지점으로 가지 않고 순찰 수색 상태로 전환한다.
         if (!_movement.HasArrived())
         {
             return;
@@ -177,7 +191,6 @@ public class GuardController : MonoBehaviour
 
     private void UpdatePatrolSearchState()
     {
-        // 웨이포인트 도착 후 제자리에서 좌우를 훑는다.
         UpdateSweepFacingDirection(
             _searchBaseFacingDirection,
             _guardData.PatrolSearchSweepAngle,
@@ -191,14 +204,12 @@ public class GuardController : MonoBehaviour
             return;
         }
 
-        // 순찰 수색이 끝나면 다음 웨이포인트로 이동한다.
         _patrol.MoveToNextWaypoint();
         EnterPatrolState();
     }
 
     private void UpdateAlertState()
     {
-        // Alert 동안에는 이동하지 않고 마지막으로 소리를 들은 방향을 바라본다.
         UpdateFacingDirectionTo(_lastHeardPosition);
 
         _searchTimer -= Time.deltaTime;
@@ -208,16 +219,13 @@ public class GuardController : MonoBehaviour
             return;
         }
 
-        // Alert 시간이 끝나면 마지막 소리 위치를 조사하러 이동한다.
-        EnterInvestigateState(_lastHeardPosition);
+        EnterInvestigateState(_lastHeardPosition, false, string.Empty);
     }
 
     private void UpdateInvestigateState()
     {
-        // 마지막으로 들은 위치를 바라본다.
         UpdateFacingDirectionTo(_lastHeardPosition);
 
-        // 마지막으로 들은 위치에 도착하면 수색 상태로 전환한다.
         if (!_movement.HasArrived())
         {
             return;
@@ -228,7 +236,6 @@ public class GuardController : MonoBehaviour
 
     private void UpdateSearchState()
     {
-        // 제자리에서 좌우로 훑으며 수색한다.
         UpdateSweepFacingDirection(
             _searchBaseFacingDirection,
             _guardData.SearchSweepAngle,
@@ -247,10 +254,8 @@ public class GuardController : MonoBehaviour
 
     private void UpdateReturnState()
     {
-        // 복귀할 웨이포인트를 바라본다.
         UpdateFacingDirectionTo(_patrol.GetCurrentWaypointPosition());
 
-        // 가장 가까운 순찰 지점으로 복귀하면 다시 순찰을 재개한다.
         if (!_movement.HasArrived())
         {
             return;
@@ -261,12 +266,9 @@ public class GuardController : MonoBehaviour
 
     private void UpdateChaseState()
     {
-        // 추격 중에는 마지막으로 감지한 플레이어 위치를 계속 저장한다.
         _lastHeardPosition = _sensor.LastDetectedPlayerPosition;
 
         UpdateFacingDirectionTo(_lastHeardPosition);
-
-        // 추격 중에는 마지막으로 감지한 플레이어 위치를 계속 목표로 갱신한다.
         _movement.SetTargetPosition(_lastHeardPosition);
     }
     #endregion
@@ -274,7 +276,6 @@ public class GuardController : MonoBehaviour
     #region 상태 진입
     private void EnterPatrolState()
     {
-        // 순찰 상태 초기화
         _currentState = GuardState.Patrol;
         _movement.SetMoveType(GuardMoveType.Patrol);
         _movement.SetTargetPosition(_patrol.GetCurrentWaypointPosition());
@@ -284,7 +285,6 @@ public class GuardController : MonoBehaviour
 
     private void EnterPatrolSearchState()
     {
-        // 웨이포인트 도착 후 순찰용 수색 상태로 진입한다.
         _currentState = GuardState.PatrolSearch;
         _searchTimer = _guardData.PatrolSearchDuration;
         _searchSweepTimer = 0f;
@@ -295,29 +295,36 @@ public class GuardController : MonoBehaviour
 
     private void EnterAlertState(Vector2 alertPosition)
     {
-        // 소리를 감지하면 잠시 멈춰 반응하는 Alert 상태로 진입한다.
         _currentState = GuardState.Alert;
         _lastHeardPosition = alertPosition;
         _searchTimer = _guardData.AlertDuration;
 
         _movement.ClearTargetPosition();
         UpdateFacingDirectionTo(_lastHeardPosition);
+
+        if (_alertBubble != null)
+        {
+            _alertBubble.ShowAlertText(ALERT_MESSAGE);
+        }
     }
 
-    private void EnterInvestigateState(Vector2 investigatePosition)
+    private void EnterInvestigateState(Vector2 investigatePosition, bool showBubble, string bubbleMessage)
     {
-        // 조사 상태 초기화
         _currentState = GuardState.Investigate;
         _lastHeardPosition = investigatePosition;
         _movement.SetMoveType(GuardMoveType.Investigate);
         _movement.SetTargetPosition(_lastHeardPosition);
 
         UpdateFacingDirectionTo(_lastHeardPosition);
+
+        if (showBubble && _alertBubble != null)
+        {
+            _alertBubble.ShowAlertText(bubbleMessage);
+        }
     }
 
     private void EnterSearchState()
     {
-        // 수색 상태 초기화
         _currentState = GuardState.Search;
         _searchTimer = _guardData.SearchDuration;
         _searchSweepTimer = 0f;
@@ -328,7 +335,6 @@ public class GuardController : MonoBehaviour
 
     private void EnterReturnState()
     {
-        // 가장 가까운 웨이포인트를 기준으로 순찰로 복귀한다.
         int closestWaypointIndex = _patrol.GetClosestWaypointIndex();
 
         _patrol.SetCurrentWaypointIndex(closestWaypointIndex);
@@ -342,19 +348,30 @@ public class GuardController : MonoBehaviour
 
     private void EnterChaseState()
     {
-        // 추격 상태 초기화
+        // 추격 상태 진입 시 랜덤 문구를 골라 지속 표시한다.
+        if (_alertBubble != null)
+        {
+            _alertBubble.ShowPersistentText(GetRandomChaseMessage());
+        }
+
         _currentState = GuardState.Chase;
         _movement.SetMoveType(GuardMoveType.Chase);
         _movement.SetTargetPosition(_sensor.LastDetectedPlayerPosition);
 
         UpdateFacingDirectionTo(_sensor.LastDetectedPlayerPosition);
     }
+
+    private string GetRandomChaseMessage()
+    {
+        // Chase 문구 3개 중 하나를 랜덤하게 선택한다.
+        int randomIndex = Random.Range(0, CHASE_MESSAGES.Length);
+        return CHASE_MESSAGES[randomIndex];
+    }
     #endregion
 
     #region 회전
     private void UpdateSweepFacingDirection(Vector2 baseFacingDirection, float sweepAngle, float sweepSpeed)
     {
-        // 기준 방향을 중심으로 좌우 왕복 회전한다.
         if (sweepAngle <= 0f || sweepSpeed <= 0f)
         {
             _facingDirection = baseFacingDirection;
@@ -364,11 +381,7 @@ public class GuardController : MonoBehaviour
         _searchSweepTimer += Time.deltaTime * sweepSpeed;
 
         float halfAngle = sweepAngle * 0.5f;
-
-        // 0~1~0 형태로 왕복하는 값을 만든다.
         float pingPong = Mathf.PingPong(_searchSweepTimer, 1f);
-
-        // -halfAngle ~ +halfAngle 범위로 변환한다.
         float currentOffsetAngle = Mathf.Lerp(-halfAngle, halfAngle, pingPong);
 
         _facingDirection = RotateVector(baseFacingDirection, currentOffsetAngle);
@@ -376,7 +389,6 @@ public class GuardController : MonoBehaviour
 
     private Vector2 RotateVector(Vector2 vector, float angle)
     {
-        // 2D 평면에서 벡터를 angle만큼 회전시킨다.
         float radians = angle * Mathf.Deg2Rad;
         float cos = Mathf.Cos(radians);
         float sin = Mathf.Sin(radians);
